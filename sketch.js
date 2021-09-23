@@ -129,11 +129,80 @@ let button = document.querySelector('button')
 let mediaRecorder;
 let chunks = [];
 let capturer
-let message = document.querySelector('#message')
-
+let videoEl
+let url
 
 
 button.addEventListener("click", recordCanvasCC)
+
+
+function recordCanvasCC(){
+  if (button.className === "off"){
+    canvas = document.querySelector('#defaultCanvas0')
+    console.log("start record")
+    button.classList.toggle("off")
+    button.innerHTML = "Stop"
+    capturer = new CCapture( { format: 'gif', workersPath: './' } );
+    capturer.start();
+    function render(){
+      requestAnimationFrame(render);
+      // rendering stuff ...
+
+      capturer.capture( document.querySelector('#defaultCanvas0') );
+    }
+    
+    render()
+  }else{
+    
+    capturer.stop();
+    videoEl = document.querySelector('video')
+    
+    // default save, will download automatically a file called {name}.extension (webm/gif/tar)
+    // capturer.save();
+    capturer.save((blob) => {
+      url = URL.createObjectURL(blob);
+      const img = document.createElement('img')
+
+      img.addEventListener("click", downloadFif)
+    
+      img.src = url
+      img.style.width = "320px"
+      img.style.height = "240px"
+      img.style.position = "absolute"
+      img.style.top = "37.5px"//"260px"
+      img.style.left = "5px"
+      canvas.style.left = "5px"
+      canvas.style.width = "320px"
+      canvas.style.height = "240px"
+      canvas.style.display = "none"
+
+      // canvas.style["aspect-ratio"] = 1.3
+      // canvas.style.left = "0px"
+      // canvas.style.width = "300px"
+      // canvas.style["aspect-ratio"] = 1.3
+
+      document.body.insertBefore(img,canvas.parentNode)
+      // const a = document.createElement("a");
+      // a.href = url;
+      // a.download = "recording.gif";
+      // a.click();
+      // URL.revokeObjectURL(url);
+    });
+    console.log("stop")
+    button.classList.toggle("off")
+    button.innerHTML = "Record"
+
+  }
+}
+
+function downloadFif(){
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recording.gif";
+      a.click();
+      URL.revokeObjectURL(url);
+}
+
 function recordCanvas(){
   if (button.className === "off"){
     canvas = document.querySelector('#defaultCanvas0')
@@ -201,51 +270,4 @@ function recordCanvas(){
 
   }
   
-}
-
-function recordCanvasCC(){
-  if (button.className === "off"){
-    canvas = document.querySelector('#defaultCanvas0')
-    console.log("start record")
-    button.classList.toggle("off")
-    button.innerHTML = "Stop"
-    capturer = new CCapture( { format: 'gif', workersPath: './' } );
-    capturer.start();
-    function render(){
-      requestAnimationFrame(render);
-      // rendering stuff ...
-
-      capturer.capture( document.querySelector('#defaultCanvas0') );
-    }
-    
-    render()
-  }else{
-    
-    capturer.stop();
-
-    // default save, will download automatically a file called {name}.extension (webm/gif/tar)
-    // capturer.save();
-    capturer.save((blob) => {
-      const url = URL.createObjectURL(blob);
-      const img = document.createElement('img')
-      img.src = url
-      img.style.width = "40%"
-      img.style.position = "absolute"
-      img.style.top = `37.5px`
-      canvas.style.left = "5px"
-      img.style.left = "965px"
-      document.body.insertBefore(img,canvas.parentNode)
-      // const a = document.createElement("a");
-      // a.href = url;
-      // a.download = "recording.gif";
-      // a.click();
-      // URL.revokeObjectURL(url);
-    });
-    console.log("stop")
-    button.classList.toggle("off")
-    button.innerHTML = "Record"
-
-  }
-  
-
 }

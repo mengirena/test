@@ -1,1 +1,4 @@
 node_modules
+gif.js
+gif.worker.js
+package-lock.json
